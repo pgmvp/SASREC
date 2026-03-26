@@ -1,3 +1,4 @@
+import argparse
 import pandas as pd
 
 
@@ -23,4 +24,21 @@ def produce_parquet(input_parquet, output_path):
     print(f"Users: {df['user_id'].max()}, Items: {df['item_id'].max()}")
 
 
-produce_parquet('data/otto/train.parquet', 'data/otto.parquet')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Preprocess Otto parquet data for SASRec.')
+    parser.add_argument('input', help='Path to input .parquet file (e.g. data/otto/train.parquet)')
+    parser.add_argument('output', help='Path to output file (e.g. data/otto.txt or data/otto.parquet)')
+    parser.add_argument(
+        '--format', choices=['txt', 'parquet'], default=None,
+        help='Output format. Inferred from output file extension when omitted.',
+    )
+    args = parser.parse_args()
+
+    fmt = args.format
+    if fmt is None:
+        fmt = 'parquet' if args.output.endswith('.parquet') else 'txt'
+
+    if fmt == 'parquet':
+        produce_parquet(args.input, args.output)
+    else:
+        produce_txt(args.input, args.output)
