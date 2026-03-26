@@ -124,6 +124,34 @@ def data_partition(fname):
             user_test[user].append(User[user][-1])
     return [user_train, user_valid, user_test, usernum, itemnum]
 
+
+def data_partition_fast(fpath):
+    import pandas as pd
+
+    df = pd.read_parquet(fpath)
+    # df must have columns user_id and item_id, ordered chronologically per user
+    usernum = int(df['user_id'].max())
+    itemnum = int(df['item_id'].max())
+
+    User = defaultdict(list)
+    for row in df.itertuples(index=False):
+        User[row.user_id].append(row.item_id)
+
+    user_train = {}
+    user_valid = {}
+    user_test = {}
+    for user, items in User.items():
+        nfeedback = len(items)
+        if nfeedback < 4:
+            user_train[user] = items
+            user_valid[user] = []
+            user_test[user] = []
+        else:
+            user_train[user] = items[:-2]
+            user_valid[user] = [items[-2]]
+            user_test[user] = [items[-1]]
+    return [user_train, user_valid, user_test, usernum, itemnum]
+
 # TODO: merge evaluate functions for test and val set
 # evaluate on test set
 def evaluate(model, dataset, args):

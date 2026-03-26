@@ -37,10 +37,11 @@ f.close()
 
 if __name__ == '__main__':
 
-    u2i_index, i2u_index = build_index(args.dataset)
+    # u2i_index, i2u_index = build_index(args.dataset)
     
     # global dataset
-    dataset = data_partition(args.dataset)
+    # dataset = data_partition(args.dataset)
+    dataset = data_partition_fast(args.dataset)
 
     [user_train, user_valid, user_test, usernum, itemnum] = dataset
     # num_batch = len(user_train) // args.batch_size # tail? + ((len(user_train) % args.batch_size) != 0)
