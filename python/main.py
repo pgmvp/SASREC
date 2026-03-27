@@ -115,7 +115,8 @@ if __name__ == '__main__':
             for param in model.item_emb.parameters(): loss += args.l2_emb * torch.sum(param ** 2)    
             loss.backward()
             adam_optimizer.step()
-            print("loss in epoch {} iteration {}: {}".format(epoch, step, loss.item())) # expected 0.4~0.6 after init few epochs
+            if step % 500 == 0:
+                print("loss in epoch {} iteration {}: {}".format(epoch, step, loss.item())) # expected 0.4~0.6 after init few epochs
 
         if epoch % 20 == 0:
             model.eval()
