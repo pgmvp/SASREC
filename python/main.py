@@ -54,7 +54,13 @@ if __name__ == '__main__':
     f = open(os.path.join(args.dataset + '_' + args.train_dir, 'log.txt'), 'w')
     f.write('epoch (val_ndcg, val_hr) (test_ndcg, test_hr)\n')
     
-    sampler = WarpSampler(user_train, usernum, itemnum, batch_size=args.batch_size, maxlen=args.maxlen, n_workers=1)
+    # sampler = WarpSampler(user_train, usernum, itemnum, batch_size=args.batch_size, maxlen=args.maxlen, n_workers=1)
+    def dummy_batch():
+        u   = np.random.randint(1, usernum + 1,  size=(args.batch_size,))
+        seq = np.random.randint(1, itemnum + 1,  size=(args.batch_size, args.maxlen))
+        pos = np.random.randint(1, itemnum + 1,  size=(args.batch_size, args.maxlen))
+        neg = np.random.randint(1, itemnum + 1,  size=(args.batch_size, args.maxlen))
+        return u, seq, pos, neg
     model = SASRec(usernum, itemnum, args).to(args.device) # no ReLU activation in original SASRec implementation?
     
     for name, param in model.named_parameters():
@@ -103,8 +109,7 @@ if __name__ == '__main__':
     for epoch in range(epoch_start_idx, args.num_epochs + 1):
         if args.inference_only: break # just to decrease identition
         for step in range(num_batch): # tqdm(range(num_batch), total=num_batch, ncols=70, leave=False, unit='b'):
-            u, seq, pos, neg = sampler.next_batch() # tuples to ndarray
-            u, seq, pos, neg = np.array(u), np.array(seq), np.array(pos), np.array(neg)
+            u, seq, pos, neg = dummy_batch()
             pos_logits, neg_logits = model(u, seq, pos, neg)
             # print("\neye ball check raw_logits:"); print(pos_logits); print(neg_logits) # check pos_logits > 0, neg_logits < 0
             adam_optimizer.zero_grad(set_to_none=True)
@@ -152,5 +157,5 @@ if __name__ == '__main__':
             torch.save(model.state_dict(), os.path.join(folder, fname))
     
     f.close()
-    sampler.close()
+    # sampler.close()
     print("Done")
