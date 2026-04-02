@@ -54,7 +54,7 @@ if __name__ == '__main__':
     f = open(os.path.join(args.dataset + '_' + args.train_dir, 'log.txt'), 'w')
     f.write('epoch (val_ndcg, val_hr) (test_ndcg, test_hr)\n')
     
-    sampler = WarpSampler(user_train, usernum, itemnum, batch_size=args.batch_size, maxlen=args.maxlen, n_workers=3)
+    sampler = WarpSampler(user_train, usernum, itemnum, batch_size=args.batch_size, maxlen=args.maxlen, n_workers=1)
     model = SASRec(usernum, itemnum, args).to(args.device) # no ReLU activation in original SASRec implementation?
     
     for name, param in model.named_parameters():
