@@ -98,8 +98,8 @@ if __name__ == '__main__':
     best_test_ndcg, best_test_hr = 0.0, 0.0
     T = 0.0
     t0 = time.time()
-    pos_labels = torch.ones(args.batch_size * args.maxlen, device=args.device)
-    neg_labels = torch.zeros(args.batch_size * args.maxlen, device=args.device)
+    pos_labels = torch.ones(args.batch_size, args.maxlen, device=args.device)
+    neg_labels = torch.zeros(args.batch_size, args.maxlen, device=args.device)
     for epoch in range(epoch_start_idx, args.num_epochs + 1):
         if args.inference_only: break # just to decrease identition
         for step in range(num_batch): # tqdm(range(num_batch), total=num_batch, ncols=70, leave=False, unit='b'):
